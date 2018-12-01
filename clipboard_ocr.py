@@ -38,14 +38,14 @@ def process_result(result):
         if 'error_code' in result.keys():
             print('baidu_ocr failed, reason:')
             print(result['error_msg'])
-            return {'success': False, 'error_code': int(result['error_code']), 'words': ''}  #返回错误码
+            return {'success': False, 'error_code': int(result['error_code']), 'error_msg': result['error_msg']}  #返回错误码
         else:
             words_result = result['words_result']
             words = ''
             for wr in words_result:
                 words += wr['words']
                 words += '\n'
-            return {'success': True, 'error_code': -1, 'words': words}
+            return {'success': True, 'words': words}
 
 def get_ocr_result(img):
     client = baidu_client_create()
@@ -59,9 +59,11 @@ def get_ocr_result(img):
             result = process_result(client.basicGeneral(img))
             #如果再不行，放弃
             if not result['success']:
-                return ''
+                return result['error_msg']
+            else:
+                return result['words']  #普通接口返回成功后
         else:  #其他错误先不管了
-            return ''
+            return result['error_msg']
     else:
         return result['words']
 
