@@ -1,0 +1,6 @@
+将百度应用的配置放在主目录下，命名为api_key.json，然后执行ocr_gui.py即可
+{
+"BAIDU_APP_ID": "",
+"BAIDU_API_KEY": "",
+"BAIDU_SECRET_KEY": "",
+}
