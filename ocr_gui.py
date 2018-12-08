@@ -1,12 +1,13 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-import sys
+import sys, os
 import clipboard_ocr as ocr
 
 class OcrGui(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.client = ocr.baidu_client_create()
         self.initUI()
 
     def initUI(self):
@@ -56,7 +57,7 @@ class OcrGui(QMainWindow):
         self.setCentralWidget(self.widget)
         self.setWindowTitle('小龙的OCR识别软件')
         self.widget.setGeometry(0,0,600,600)
-        self.setWindowIcon(QIcon('ocr.jpg'))
+        self.setWindowIcon(QIcon(os.path.join(os.path.abspath('.'), 'ocr.jpg')))
         self.center()
         self.show()
 
@@ -84,7 +85,7 @@ class OcrGui(QMainWindow):
 
     def do_ocr_and_refresh(self, file_path):
         self.lbl_img.setPixmap(self.scaled_pixmap(file_path))
-        result = ocr.do_ocr(file_path)
+        result = ocr.do_ocr(file_path, self.client)
         self.statusBar().showMessage('结果已复制到剪切板！')
         self.textedit.setText(result)
 

@@ -4,6 +4,15 @@ import os, json
 import win32clipboard as wc
 import win32con
 
+def get_settings():
+    try:
+        with open('settings.json', encoding='utf-8') as f:
+            settings = json.load(f)
+        return settings
+    except:
+        return {}
+
+# 获取剪切板图片
 def get_clipboard_image():
     file_path = os.path.join(os.path.abspath('.'), 'grabed_img.png')
     img = ImageGrab.grabclipboard()
@@ -33,6 +42,7 @@ def baidu_client_create():
         print('api_key_file not found!')
         return None
 
+# 对结果进行解析，并把返回的文字列表整合成一个大字符串，如果遇到错误，把错误传递出去
 def process_result(result):
     if result:
         if 'error_code' in result.keys():
@@ -45,10 +55,19 @@ def process_result(result):
             for wr in words_result:
                 words += wr['words']
                 words += '\n'
+            # words = replace_eng_to_chs(words)
             return {'success': True, 'words': words}
 
-def get_ocr_result(img):
-    client = baidu_client_create()
+# 将英文的标点符号批量替换为中文
+def replace_eng_to_chs(text):
+    to_be_replaced = {',': '，', ':': '：', ';': '；', '?': '？', '(': '（', ')': '）'}
+    for key in to_be_replaced:
+        text = text.replace(key, to_be_replaced[key])
+        # print(key + '已被替换')
+    return text
+
+def get_ocr_result(img, client):
+    # client = baidu_client_create()
     if not client:
         print('create client failed!')
         return ""
@@ -67,6 +86,7 @@ def get_ocr_result(img):
     else:
         return result['words']
 
+# 把识别到的文字复制到剪切板
 def set_clip_board(text):
     wc.OpenClipboard()
     wc.EmptyClipboard()
@@ -74,18 +94,29 @@ def set_clip_board(text):
     wc.CloseClipboard()
     return text
 
-def do_ocr(img_path):
+# 主函数
+def do_ocr(img_path, client):
     if not img_path:
         print('get clipboard image failed!')
         return ''
     else:
         img = get_file_content(img_path)
-        result = get_ocr_result(img)
+        result = get_ocr_result(img, client)
+        result = replace_eng_to_chs(result)
+        # 设置是否自动替换标点符号
+        # if settings:
+        #     try:
+        #         if settings["replace_eng_to_chs"]:
+        #             result = replace_eng_to_chs(result)
+        #     except KeyError:
+        #         print('没有设置是否替换标点符号')
         print(result)
         set_clip_board(result)
         print('已复制到剪切板！')
         return result
 
 if __name__ == '__main__':
+    client = baidu_client_create()
+    settings = get_settings()
     img_path = get_clipboard_image()
-    do_ocr(img_path)
+    do_ocr(img_path, client)
