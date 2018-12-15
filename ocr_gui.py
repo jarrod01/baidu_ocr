@@ -3,12 +3,15 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import sys, os
 import clipboard_ocr as ocr
+import time, threading
+from multiprocessing import Process
 
 class OcrGui(QMainWindow):
     def __init__(self):
         super().__init__()
         self.client = ocr.baidu_client_create()
         self.text = ''
+        self.auto_ocr_started = False
         self.initUI()
 
     def initUI(self):
@@ -33,10 +36,15 @@ class OcrGui(QMainWindow):
         removewrapAction.setStatusTip('去掉文本中的所有换行')
         removewrapAction.triggered.connect(self.remove_wrap)
 
+        self.auto_ocrAction = QAction('开始自动识别', self)
+        self.auto_ocrAction.setStatusTip('后台自动识别并复制文字')
+        self.auto_ocrAction.triggered.connect(self.auto_ocr)
+
         menubar = self.menuBar()
         menubar.addAction(openAction)
         menubar.addAction(clipboardAction)
         menubar.addAction(removewrapAction)
+        menubar.addAction(self.auto_ocrAction)
         menubar.addAction(exitAction)
         # 用来创建窗口内的菜单栏
         menubar.setNativeMenuBar(False)
@@ -107,9 +115,29 @@ class OcrGui(QMainWindow):
         else:
             return img_pix
 
-    def replace_huanhang(self):
-        pass
+    def repeat_ocr(self):
+        while self.auto_ocr_started:
+            print('test')
+            time.sleep(0.5)
+            # self.clipboard_ocr()
+            img_path = ocr.get_clipboard_image()
+            ocr.do_ocr(img_path, self.client)
 
+    def auto_ocr(self):
+        if self.auto_ocr_started:
+            self.auto_ocrAction.setText('开始自动识别')
+            self.auto_ocrAction.setStatusTip('开始自动识别')
+            self.auto_ocr_started = False
+        else:
+            self.auto_ocr_started = True
+            self.auto_ocrAction.setText('停止自动识别')
+            self.auto_ocrAction.setStatusTip('停止自动识别')
+            # self.subprocess = Process(target=self.repeat_ocr)
+            # self.subprocess.start()
+            # self.subprocess.join()
+            subthread = threading.Thread(target=self.repeat_ocr)
+            subthread.start()
+            # self.subthread.join()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
