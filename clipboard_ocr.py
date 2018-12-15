@@ -4,6 +4,9 @@ import os, json
 import win32clipboard as wc
 import win32con
 
+user_path = os.path.expanduser("~")
+api_key_file = os.path.join(user_path, 'api_key.json')
+
 def get_settings():
     try:
         with open('settings.json', encoding='utf-8') as f:
@@ -27,20 +30,28 @@ def get_file_content(filePath):
         return fp.read()
 
 def baidu_client_create():
-    user_path = os.path.expanduser("~")
-    api_key_file = os.path.join(user_path, 'api_key.json')
     try:
         with open(api_key_file, encoding='utf-8') as f:
-            api_key = json.load(f)
-            APP_ID = api_key['BAIDU_APP_ID']
-            API_KEY = api_key['BAIDU_API_KEY']
-            SECRET_KEY = api_key['BAIDU_SECRET_KEY']
+            api_key_json = json.load(f)
+            APP_ID = api_key_json['BAIDU_APP_ID']
+            API_KEY = api_key_json['BAIDU_API_KEY']
+            SECRET_KEY = api_key_json['BAIDU_SECRET_KEY']
             ocr_client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
             # sr_client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
             return ocr_client
     except FileNotFoundError:
         print('api_key_file not found!')
+        create_api_key_file()
         return None
+
+def create_api_key_file():
+    APP_ID = input('请输入您的百度APPID：')
+    API_KEY = input('请输入您的百度API_KEY：')
+    SECRET_KEY = input('请输入您的百度SECRET_KEY：')
+    api_key_json = {'BAIDU_APP_ID': APP_ID, 'BAIDU_API_KEY': API_KEY, 'BAIDU_SECRET_KEY': SECRET_KEY}
+    with open(api_key_file, 'w', encoding='utf-8') as f:
+        json.dump(api_key_json, f, ensure_ascii=False)
+    return api_key_json
 
 # 对结果进行解析，并把返回的文字列表整合成一个大字符串，如果遇到错误，把错误传递出去
 def process_result(result):
@@ -85,6 +96,8 @@ def get_ocr_result(img, client):
                 return result['error_msg']
             else:
                 return result['words']  #普通接口返回成功后
+        elif result['error_code'] == 14:
+            return '百度鉴权失败，请检查api_key配置是否正确，文件路径：' + api_key_file
         else:  #其他错误先不管了
             return result['error_msg']
     else:
