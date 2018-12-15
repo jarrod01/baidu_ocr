@@ -8,6 +8,7 @@ class OcrGui(QMainWindow):
     def __init__(self):
         super().__init__()
         self.client = ocr.baidu_client_create()
+        self.text = ''
         self.initUI()
 
     def initUI(self):
@@ -28,9 +29,14 @@ class OcrGui(QMainWindow):
         clipboardAction.setStatusTip('对剪切板的图片进行OCR识别')
         clipboardAction.triggered.connect(self.clipboard_ocr)
 
+        removewrapAction = QAction('去掉换行', self)
+        removewrapAction.setStatusTip('去掉文本中的所有换行')
+        removewrapAction.triggered.connect(self.remove_wrap)
+
         menubar = self.menuBar()
         menubar.addAction(openAction)
         menubar.addAction(clipboardAction)
+        menubar.addAction(removewrapAction)
         menubar.addAction(exitAction)
         # 用来创建窗口内的菜单栏
         menubar.setNativeMenuBar(False)
@@ -85,9 +91,14 @@ class OcrGui(QMainWindow):
 
     def do_ocr_and_refresh(self, file_path):
         self.lbl_img.setPixmap(self.scaled_pixmap(file_path))
-        result = ocr.do_ocr(file_path, self.client)
+        self.text = ocr.do_ocr(file_path, self.client)
         self.statusBar().showMessage('结果已复制到剪切板！')
-        self.textedit.setText(result)
+        self.textedit.setText(self.text)
+
+    def remove_wrap(self):
+        self.text = self.text.replace('\n', '')
+        ocr.set_clip_board(self.text)
+        self.textedit.setText(self.text)
 
     def scaled_pixmap(self, file_path):
         img_pix = QPixmap(file_path)
@@ -95,6 +106,10 @@ class OcrGui(QMainWindow):
             return img_pix.scaledToHeight(300)
         else:
             return img_pix
+
+    def replace_huanhang(self):
+        pass
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

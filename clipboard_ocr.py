@@ -66,6 +66,10 @@ def replace_eng_to_chs(text):
         # print(key + '已被替换')
     return text
 
+def replace_huanhang(text):
+    text = text.replace('\n', '')
+    return text
+
 def get_ocr_result(img, client):
     # client = baidu_client_create()
     if not client:
