@@ -12,6 +12,7 @@ class OcrGui(QMainWindow):
         self.client = ocr.baidu_client_create()
         self.text = ''
         self.auto_ocr_started = False
+        self.replace_punctuation = True
         self.initUI()
 
     def initUI(self):
@@ -40,10 +41,15 @@ class OcrGui(QMainWindow):
         self.auto_ocrAction.setStatusTip('后台自动识别并复制文字')
         self.auto_ocrAction.triggered.connect(self.auto_ocr)
 
+        self.change_replace_punctuationAction = QAction('关闭英文标点替换', self)
+        self.change_replace_punctuationAction.setStatusTip('关闭将英文标点自动替换为中文标点')
+        self.change_replace_punctuationAction.triggered.connect(self.change_replace_punctuation)
+
         menubar = self.menuBar()
         menubar.addAction(openAction)
         menubar.addAction(clipboardAction)
         menubar.addAction(removewrapAction)
+        menubar.addAction(self.change_replace_punctuationAction)
         menubar.addAction(self.auto_ocrAction)
         menubar.addAction(exitAction)
         # 用来创建窗口内的菜单栏
@@ -99,7 +105,7 @@ class OcrGui(QMainWindow):
 
     def do_ocr_and_refresh(self, file_path):
         self.lbl_img.setPixmap(self.scaled_pixmap(file_path))
-        self.text = ocr.do_ocr(file_path, self.client)
+        self.text = ocr.do_ocr(file_path, self.client, replace_punctuation=self.replace_punctuation)
         self.statusBar().showMessage('结果已复制到剪切板！')
         self.textedit.setText(self.text)
 
@@ -107,6 +113,17 @@ class OcrGui(QMainWindow):
         self.text = self.text.replace('\n', '')
         ocr.set_clip_board(self.text)
         self.textedit.setText(self.text)
+
+    def change_replace_punctuation(self):
+        if self.replace_punctuation:
+            self.change_replace_punctuationAction.setText('开启英文标点替换')
+            self.change_replace_punctuationAction.setStatusTip('开启将英文标点自动替换为中文标点')
+            self.replace_punctuation = False
+        else:
+            self.change_replace_punctuationAction.setText('关闭英文标点替换')
+            self.change_replace_punctuationAction.setStatusTip('关闭将英文标点自动替换为中文标点')
+            self.replace_punctuation = True
+
 
     def scaled_pixmap(self, file_path):
         img_pix = QPixmap(file_path)
@@ -121,7 +138,8 @@ class OcrGui(QMainWindow):
             time.sleep(0.5)
             # self.clipboard_ocr()
             img_path = ocr.get_clipboard_image()
-            ocr.do_ocr(img_path, self.client)
+            ocr.do_ocr(img_path, self.client, replace_punctuation=self.replace_punctuation)
+        print('自动识别已停止！')
 
     def auto_ocr(self):
         if self.auto_ocr_started:

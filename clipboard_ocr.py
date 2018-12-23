@@ -112,21 +112,16 @@ def set_clip_board(text):
     return text
 
 # 主函数
-def do_ocr(img_path, client):
+def do_ocr(img_path, client, replace_punctuation=True):
     if not img_path:
         print('get clipboard image failed!')
         return ''
     else:
         img = get_file_content(img_path)
         result = get_ocr_result(img, client)
-        result = replace_eng_to_chs(result)
-        # 设置是否自动替换标点符号
-        # if settings:
-        #     try:
-        #         if settings["replace_eng_to_chs"]:
-        #             result = replace_eng_to_chs(result)
-        #     except KeyError:
-        #         print('没有设置是否替换标点符号')
+        # 设置是否替换标点符号
+        if replace_punctuation:
+            result = replace_eng_to_chs(result)
         print(result)
         set_clip_board(result)
         print('已复制到剪切板！')
