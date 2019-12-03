@@ -4,8 +4,8 @@ import os, json
 import win32clipboard as wc
 import win32con
 
-user_path = os.path.expanduser("~")
-api_key_file = os.path.join(user_path, 'api_key.json')
+# user_path = os.path.expanduser("~")
+api_key_file = 'api_key.json'
 
 def get_settings():
     try:
@@ -31,7 +31,7 @@ def get_file_content(filePath):
 
 def baidu_client_create():
     try:
-        with open(api_key_file, encoding='utf-8') as f:
+        with open('api_key.json', encoding='utf-8') as f:
             api_key_json = json.load(f)
             APP_ID = api_key_json['BAIDU_APP_ID']
             API_KEY = api_key_json['BAIDU_API_KEY']
