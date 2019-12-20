@@ -71,7 +71,7 @@ def process_result(result):
 
 # 将英文的标点符号批量替换为中文
 def replace_eng_to_chs(text):
-    to_be_replaced = {',': '，', ':': '：', ';': '；', '?': '？', '(': '（', ')': '）'}
+    to_be_replaced = {',': '，', ':': '：', ';': '；', '?': '？', '(': '（', ')': '）', '!': '！'}
     for key in to_be_replaced:
         text = text.replace(key, to_be_replaced[key])
         # print(key + '已被替换')
