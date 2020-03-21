@@ -4,7 +4,7 @@ from PyQt5.QtGui import *
 import sys, os
 import clipboard_ocr as ocr
 import time, threading
-from multiprocessing import Process
+# from multiprocessing import Process
 
 class OcrGui(QMainWindow):
     def __init__(self):
@@ -134,7 +134,7 @@ class OcrGui(QMainWindow):
 
     def repeat_ocr(self):
         while self.auto_ocr_started:
-            print('test')
+            # print('test')
             time.sleep(0.5)
             # self.clipboard_ocr()
             img_path = ocr.get_clipboard_image()

@@ -2,7 +2,7 @@ from PIL import Image, ImageGrab
 from aip import *
 import os, json
 import win32clipboard as wc
-import win32con
+# import win32con
 
 # user_path = os.path.expanduser("~")
 api_key_file = 'api_key.json'
@@ -114,7 +114,7 @@ def set_clip_board(text):
 # 主函数
 def do_ocr(img_path, client, replace_punctuation=True):
     if not img_path:
-        print('get clipboard image failed!')
+        print('剪切板中没有图片！')
         return ''
     else:
         img = get_file_content(img_path)
