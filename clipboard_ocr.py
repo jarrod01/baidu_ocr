@@ -43,6 +43,11 @@ def baidu_client_create():
         print('api_key_file not found!')
         create_api_key_file()
         return None
+        # APP_ID = ''
+        # API_KEY = ''
+        # SECRET_KEY = ''
+        # ocr_client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
+        # return ocr_client
 
 def create_api_key_file():
     APP_ID = input('请输入您的百度APPID：')

@@ -77,7 +77,7 @@ class OcrGui(QMainWindow):
         self.setCentralWidget(self.widget)
         self.setWindowTitle('小龙的OCR识别软件')
         self.widget.setGeometry(0,0,600,600)
-        self.setWindowIcon(QIcon(os.path.join(os.path.abspath('.'), os.path.join('icon','ocr.jpg'))))
+        self.setWindowIcon(QIcon('ocr.png'))
         self.center()
         self.show()
 

@@ -2,7 +2,8 @@
 2、按Ctrl+S键可以直接识别剪切板中的图片，并自动识别
 
 用法：
-将百度应用的配置放在用户主目录下，命名为api_key.json，然后执行python3 ocr_gui.py即可，windows环境下还可以直接执行run.vbs或者run.bat
+在百度智能云申请通用文字识别的应用
+将百度应用的配置放在应用目录下，命名为api_key.json，然后执行python3 ocr_gui.py即可，windows环境下还可以直接执行run.vbs或者run.bat
 格式：
 {
 "BAIDU_APP_ID": "",

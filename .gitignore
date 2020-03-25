@@ -1,5 +1,6 @@
 grabed_img.png
 api_key.json
+venv/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
