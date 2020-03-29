@@ -13,6 +13,7 @@ class OcrGui(QMainWindow):
         self.text = ''
         self.auto_ocr_started = False
         self.replace_punctuation = True
+        # print(os.path.abspath(__file__))
         self.initUI()
 
     def initUI(self):
@@ -77,7 +78,7 @@ class OcrGui(QMainWindow):
         self.setCentralWidget(self.widget)
         self.setWindowTitle('小龙的OCR识别软件')
         self.widget.setGeometry(0,0,600,600)
-        self.setWindowIcon(QIcon('ocr.png'))
+        self.setWindowIcon(QIcon(os.path.join(os.path.abspath(__file__), 'ocr.png')))
         self.center()
         self.show()
 
